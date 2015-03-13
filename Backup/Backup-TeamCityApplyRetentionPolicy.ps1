@@ -50,7 +50,7 @@ function Backup-TeamCityApplyRetentionPolicy {
     )
 
     $cutOffDate = (Get-Date).Date.AddDays(-$RetentionInDays + 1)
-    $allBackups = Get-ChildItem -Path $OutputBackupDir -Filter "*.zip"
+    $allBackups = Get-ChildItem -Path "$OutputBackupDir\*" -Include '*.zip','*.7z'
     Write-Log -Info ("Retention: found {0} backup files." -f (($allBackups | Measure).Count))
     $backupsToDelete = $allBackups | Where-Object { $_.CreationTime -lt $cutOffDate } | Select-Object -ExpandProperty FullName
     if (!$backupsToDelete) {

@@ -73,6 +73,7 @@ function Backup-TeamCityData {
         $SecondaryRetentionInDays
     )
 
+    Write-Log -Info "Starting TeamCity backup, output dir: '$OutputBackupDir', secondary output dir: '$SecondaryBackupDir', primary retention: $PrimaryRetentionInDays, secondary retention: $SecondaryRetentionInDays"
     $server = "localhost"
     $teamcityPaths = Get-TeamCityPaths
     $password = Read-TeamCityPasswordFile -PasswordFile $PasswordFile
@@ -98,6 +99,7 @@ function Backup-TeamCityData {
     }
 
     if ($SecondaryBackupDir) {
+        Write-Log -Info "Copying from '$outputFile' to '$SecondaryBackupDir'"
         Copy-Item -Path $outputFile -Destination $SecondaryBackupDir
 
         if ($SecondaryRetentionInDays) {
@@ -105,6 +107,6 @@ function Backup-TeamCityData {
         }
     }
 
-    Remove-TempDirectory -BasePath $OutputBackupDir
+    [void](Remove-TempDirectory -BasePath $OutputBackupDir)
     return $outputFile
 }

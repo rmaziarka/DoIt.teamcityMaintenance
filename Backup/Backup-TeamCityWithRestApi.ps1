@@ -60,8 +60,8 @@ function Backup-TeamCityWithRestApi {
         $TeamcityBackupPaths
     )
 
-    $timeoutInHours = 2 
-    $waitTimeBetweenRetriesInSeconds = 10
+    $timeoutInHours = 4
+    $waitTimeBetweenRetriesInSeconds = 30
     $backupTeamCityRestBackupDir = $TeamcityBackupPaths.RestBackupDir
     
     $currentTeamcityBackupFiles = Get-ChildItem -Path $TeamcityPaths.TeamCityBackupDir | Where-Object { $_.FullName -match ".zip$" } | Select-Object -ExpandProperty FullName

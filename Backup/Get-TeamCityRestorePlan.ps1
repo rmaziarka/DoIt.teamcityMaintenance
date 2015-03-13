@@ -56,7 +56,7 @@ Function Get-TeamCityRestorePlan {
        b) If you want to restore to TeamCity internal database (hsqldb - for quick and dirty non-production solution), run:
           Restore-TeamCityData -BackupFile <pathToYourBackupFile> -RestoreToInternalDatabase
        c) If you want to use a new external database connection, prepare the database (for details see http://confluence.jetbrains.com/display/TCD8/Setting+up+an+External+Database),
-          create a new database.properties file (you can look at existing <your_backup.zip>\DatabaseProperties\*.dist files for reference) and run:
+          create a new database.properties file (you can look at existing <your_backup.7z>\DatabaseProperties\*.dist files for reference) and run:
           Restore-TeamCityData -BackupFile <pathToYourBackupFile> -DatabasePropertiesFile <pathToUnpackedDatabasePropertiesFile>
     
        Note if you're running Restore-TeamCityServer.bat, Restore-TeamCityData cmdlet will be run automatically with specific options basing on your input.

@@ -91,18 +91,20 @@ try {
     $backupFile = Backup-TeamCityData -OutputBackupDir $OutputBackupDir -SecondaryBackupDir $SecondaryBackupDir -PasswordFile $PasswordFile -PrimaryRetentionInDays $PrimaryRetentionInDays -SecondaryRetentionInDays $SecondaryRetentionInDays
     Write-EventLog -LogName Application -Source $PSCIGlobalConfiguration.LogEventLogSource -EntryType Info -EventID 1 -Message ("TeamCity backup completed succesfully - created file ${backupFile}.")
     $backupFileName = Split-Path -Path $backupFile -Leaf
+    $backupFileSize = Convert-BytesToSize -Size ((Get-Item -Path $backupFile).Length)
     $mailSubject = '[TeamCity] Backup success'
-    $mailBody = "TeamCity backup completed successfully. File '$backupFileName' created"
+    $mailBody = "TeamCity backup completed successfully. Created file $backupFileName ($backupFileSize)"
 } catch {
+    $err = $_
     $mailSubject = '[TeamCity] Backup failure'
-    $mailBody = "TeamCity backup failed: $_"
-    Write-ErrorRecord
+    $mailBody = "TeamCity backup failed: $err"
+    Write-ErrorRecord -ErrorRecord $err
 } finally {
     $mailBody += ".`n`nContents of '${OutputBackupDir}':`n"
-    $mailBody += (Get-ChildItem -Path $OutputBackupDir -Filter "*.zip" | Select-Object -ExpandProperty Name | Sort-Object) -join "`n"
+    $mailBody += (Get-ChildItem -Path "$OutputBackupDir\*" -Include '*.zip','*.7z' | Select-Object -ExpandProperty Name | Sort-Object) -join "`n"
     if ($SecondaryBackupDir) {
         $mailBody += "`n`nContents of '${SecondaryBackupDir}':`n"
-        $mailBody += (Get-ChildItem -Path $SecondaryBackupDir -Filter "*.zip" | Select-Object -ExpandProperty Name | Sort-Object) -join "`n"
+        $mailBody += (Get-ChildItem -Path "$SecondaryBackupDir\*" -Include '*.zip','*.7z' | Select-Object -ExpandProperty Name | Sort-Object) -join "`n"
     }
     Send-MailMessage @mailOptions -Subject $mailSubject -Body $mailBody
 }

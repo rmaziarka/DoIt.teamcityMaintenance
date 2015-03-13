@@ -26,7 +26,7 @@ Import-Module "$PSScriptRoot\..\..\..\PSCI.psm1";
 
 Get-TeamCityRestorePlan
 
-$backupFile = Read-Host 'Please specify path to the backup file (e.g. D:\TeamCityBackups\TeamCity.zip):'
+$backupFile = Read-Host 'Please specify path to the backup file (e.g. D:\TeamCityBackups\TeamCity.7z):'
 if (!(Test-Path $backupFile)) {
     Write-Log -Critical "Cannot access the backup file at '$backupFile'."
 }

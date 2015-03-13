@@ -66,7 +66,7 @@ function Backup-TeamCityArtifacts {
         return
     }
     $buildDirs = $buildDirs | Foreach-Object { Join-Path -Path $TeamcityPaths.TeamCityArtifactsRelativeDir -ChildPath $_ }
-    $outputFileName = Join-Path -Path $outputBackupDir -ChildPath "TeamCity_Artifacts_${currentTimestamp}.zip"
+    $outputFileName = Join-Path -Path $outputBackupDir -ChildPath "TeamCity_Artifacts_${currentTimestamp}.7z"
     Write-Log -Info "Creating file $outputFileName"
     Compress-With7Zip -PathsToCompress $buildDirs -OutputFile $outputFileName -WorkingDirectory $TeamcityPaths.TeamCityDataDir
     Write-Log -Info "TeamCity backup Pinned Builds succeeded."

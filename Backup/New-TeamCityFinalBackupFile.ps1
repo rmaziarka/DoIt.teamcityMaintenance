@@ -65,7 +65,7 @@ function New-TeamCityFinalBackupFile {
 
     $currentTimestamp = Get-Date -Format "yyyyMMdd_HHmmss"
     $hostname = [system.environment]::MachineName
-    $outputFile = Join-Path -Path $OutputBackupDir -ChildPath "TeamCity_${hostname}_${currentTimestamp}.zip"
+    $outputFile = Join-Path -Path $OutputBackupDir -ChildPath "TeamCity_${hostname}_${currentTimestamp}.7z"
     Write-Log -Info "Packaging '$BackupTempDir to '$outputFile' "
     Compress-With7Zip -PathsToCompress (Join-Path -Path $BackupTempDir -ChildPath "*") -OutputFile $outputFile -CompressionLevel "fast" -Password $Password
 
