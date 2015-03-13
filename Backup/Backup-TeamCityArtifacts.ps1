@@ -114,7 +114,7 @@ function Get-TeamCityPinnedBuildDirectories() {
         $buildDir = @($buildInfoXml.build.buildType.projectId, $buildTypeName, $build.id) -join '\'
         Write-Log -Info "Pinned build directory at: '$buildDir'"
 
-        $result.Add($buildDir)
+        [void]($result.Add($buildDir))
     }
 
     return $result.ToArray()

@@ -73,6 +73,7 @@ Import-Module "$PSScriptRoot\..\..\..\PSCI.psm1"
 $PSCIGlobalConfiguration.LogFile = "$($OutputBackupDir)\TeamCity_backup.log"
 $PSCIGlobalConfiguration.LogEventLogSource = 'TeamCity backup job'
 $PSCIGlobalConfiguration.LogEventLogCreateSourceIfNotExists = $true
+$PSCIGlobalConfiguration.ExitImmediatelyOnError = $false
 
 $mailOptions = @{
     To = $MailRecipients
