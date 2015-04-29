@@ -45,7 +45,7 @@ function Read-TeamCityPasswordFile {
     if (!$PasswordFile) {
         return $null
     }
-    if (!(Test-Path -Path $PasswordFile)) {
+    if (!(Test-Path -LiteralPath $PasswordFile)) {
         Write-Log -Critical ("Cannot access password file at '{0}'. Please ensure it exists and the current user '{1}' has appropriate permissions." -f $PasswordFile, (Get-CurrentUser))
     }
     $pass = Get-Content -Path $PasswordFile -ReadCount 1

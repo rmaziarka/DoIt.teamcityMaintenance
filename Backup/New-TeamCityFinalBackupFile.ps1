@@ -69,7 +69,7 @@ function New-TeamCityFinalBackupFile {
     Write-Log -Info "Packaging '$BackupTempDir to '$outputFile' "
     Compress-With7Zip -PathsToCompress (Join-Path -Path $BackupTempDir -ChildPath "*") -OutputFile $outputFile -CompressionLevel "fast" -Password $Password
 
-    if (!(Test-Path -Path $outputFile)) {
+    if (!(Test-Path -LiteralPath $outputFile)) {
         Write-Log -Critical "Backup failed - no final backup output file: '$outputFile'"
     }
     

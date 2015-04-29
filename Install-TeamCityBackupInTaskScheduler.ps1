@@ -130,7 +130,7 @@ function Install-TeamCityBackupInTaskScheduler {
     Test-IsAdmin -ThrowErrorIfNot
 
     try { 
-        $outputBackupDirExists = Test-Path -Path $OutputBackupDir
+        $outputBackupDirExists = Test-Path -LiteralPath $OutputBackupDir
         if (!$OutputBackupDirExists) {
             Write-Log -Warn "Backup directory '$OutputBackupDir' does not exist. Please ensure it exists and set appropriate permissions."
         }
@@ -138,7 +138,7 @@ function Install-TeamCityBackupInTaskScheduler {
         Write-Log -Warn "Backup directory '$OutputBackupDir' does not exist (or there is double-hop issue). Please ensure it exists and set appropriate permissions. Exception: $_"
     }
     try { 
-        $outputBackupDirExists = Test-Path -Path $SecondaryBackupDir
+        $outputBackupDirExists = Test-Path -LiteralPath $SecondaryBackupDir
         if (!$OutputBackupDirExists) {
             Write-Log -Warn "Backup directory '$SecondaryBackupDir' does not exist. Please ensure it exists and set appropriate permissions."
         }

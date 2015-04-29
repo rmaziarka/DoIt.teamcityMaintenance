@@ -63,11 +63,11 @@ function Test-TeamCityRestorePrerequisites {
         $OverwriteExistingData
     )
  
-    if (!(Test-Path -Path $BackupFile)) {
+    if (!(Test-Path -LiteralPath $BackupFile)) {
         Write-Log -Critical "Backup file '$BackupFile' does not exist"
     }
 
-    if ($DatabasePropertiesFile -and (!(Test-Path -Path $DatabasePropertiesFile))) {
+    if ($DatabasePropertiesFile -and (!(Test-Path -LiteralPath $DatabasePropertiesFile))) {
         Write-Log -Critical "Cannot access database properties file at '$DatabasePropertiesFile'."
     }
     if ($DatabasePropertiesFile -and $RestoreToInternalDatabase) {

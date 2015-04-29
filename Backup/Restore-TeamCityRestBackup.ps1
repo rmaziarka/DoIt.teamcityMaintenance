@@ -65,7 +65,7 @@ function Restore-TeamCityRestBackup {
 
     $backupFile = Get-LastBackupFileFromDirectory -Dir $TeamcityBackupPaths.RestBackupDir
     $teamCityBackupDir = $TeamcityPaths.TeamCityBackupDir
-    if (!(Test-Path -Path $teamCityBackupDir)) {
+    if (!(Test-Path -LiteralPath $teamCityBackupDir)) {
         Write-Log -Info "Creating directory '$teamCityBackupDir'."
         [void](New-Item -Path $teamCityBackupDir -ItemType directory -Force)
     }
@@ -85,7 +85,7 @@ function Restore-TeamCityRestBackup {
         $dbPropsFile = (Join-Path -Path $TeamcityBackupPaths.DatabasePropertiesDir -ChildPath "database.properties")
     }
 
-    if (!(Test-Path -Path $dbPropsFile)) {
+    if (!(Test-Path -LiteralPath $dbPropsFile)) {
         Write-Log -Critical "Cannot access file '$dbPropsFile'. Please create the file manually and run restore with -DatabasePropertiesFile."
     }
 

@@ -77,7 +77,7 @@ function Restore-TeamCityData {
 
     if ($OverwriteExistingData) {
         Write-Log -Warn "Clearing TeamCity data directory ('$($teamCityPaths.TeamCityDataDir)')."
-        Remove-Item -Path (Join-Path -Path $teamCityPaths.TeamCityDataDir -ChildPath "*") -Recurse -Force
+        Remove-Item -LiteralPath (Join-Path -Path $teamCityPaths.TeamCityDataDir -ChildPath "*") -Recurse -Force
     }
     Write-Log -Info "Starting TeamCity restore." -Emphasize
 

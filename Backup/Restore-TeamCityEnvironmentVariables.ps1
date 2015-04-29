@@ -44,7 +44,7 @@ function Restore-TeamCityEnvironmentVariables {
 
     $backupDir = $TeamcityBackupPaths.EnvDir
     $envVarsFile = Join-Path -Path $backupDir -ChildPath "envVars.txt"
-    if (!(Test-Path -Path $envVarsFile)) {
+    if (!(Test-Path -LiteralPath $envVarsFile)) {
         Write-Log -Warn "No TEAMCITY environment variables file at '$envVarsFile'. You will need to set TEAMCITY_SERVER_MEM_OPTS manually (according to TeamCity documentation)."
         Request-UserInputToContinue
         return

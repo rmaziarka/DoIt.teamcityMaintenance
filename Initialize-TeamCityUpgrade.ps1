@@ -58,7 +58,7 @@ Then, run the TeamCity installer. Don't run the TeamCity service after the insta
     Restore-TeamCityCertificates -TeamCityPaths $teamCityPaths -TeamCityBackupPaths $teamCityBackupPaths
 
     Write-Log -Info ("Deleting directory '{0}'" -f $teamcityBackupPaths.CertificatesDir)
-    Remove-Item -Path $teamcityBackupPaths.CertificatesDir -Force -Recurse
+    Remove-Item -LiteralPath $teamcityBackupPaths.CertificatesDir -Force -Recurse
     Write-Log -Info "Certificates restored. Please start the TeamCity service and enjoy the new version. Please also create a new TeamCity backup as soon as possible." -Emphasize
     
 }
