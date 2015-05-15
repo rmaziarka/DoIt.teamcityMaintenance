@@ -100,7 +100,19 @@ try {
     $mailBody = "TeamCity backup failed: $err"
     Write-ErrorRecord -ErrorRecord $err
 } finally {
-    $mailBody += ".`n`nContents of '${OutputBackupDir}':`n"
+    $mailBody += ".`n`nFree space:`n"
+    $diskInfo = Get-WmiObject Win32_logicaldisk | Where-Object { $_.Size }
+    foreach ($disk in $diskInfo) {
+        $freeSpace = Convert-BytesToSize -Size ($disk.FreeSpace)
+        if ($disk.FreeSpace -lt 10*1024*1024*1024) {
+            $warn = '!!!'
+        } else {
+            $warn = ''
+        }
+        $mailBody += ("{0}{1} {2}`n" -f $warn, $disk.DeviceID, $freeSpace)
+    }
+
+    $mailBody += "`nContents of '${OutputBackupDir}':`n"
     $mailBody += (Get-ChildItem -Path "$OutputBackupDir\*" -Include '*.zip','*.7z' | Select-Object -ExpandProperty Name | Sort-Object) -join "`n"
     if ($SecondaryBackupDir) {
         $mailBody += "`n`nContents of '${SecondaryBackupDir}':`n"
