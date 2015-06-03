@@ -22,20 +22,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 #>
 
-$curDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-Get-ChildItem -Recurse $curDir -Include *.ps1 | Where-Object { $_ -notmatch ".Tests.ps1" -and $_ -notmatch '.*\\(bat)\\.*'} | Foreach-Object {
-    . $_.FullName      
-}
+function Get-FreeSpaceInfo {
+    <#
+    .SYNOPSIS
+    Gets information about free space at each logical disk.
 
-Export-ModuleMember -Function `
-    Backup-TeamCityData, `
-    Get-DirectoryContentsInfo, `
-    Get-FreeSpaceInfo, `
-    Get-PinnedBuildsInfo, `
-    Get-TeamCityPaths, `
-    Get-TeamCityRestorePlan, `
-    Get-TeamCityRestSession, `
-    Get-TeamCityPinnedBuildsInfo, `
-    Initialize-TeamCityUpgrade, `
-    Install-TeamCityBackupInTaskScheduler, `
-    Restore-TeamCityData
+    .PARAMETER WarningThresholdInBytes
+    If specified, '!!!' will be prepended to the line with disk that has less free space.
+
+    .EXAMPLE
+    Get-FreeSpaceInfo -WarningThresholdInBytes (10*1024*1024*1024)
+    #>
+
+    [CmdletBinding()]
+    [OutputType([string])]
+    param(
+        [Parameter(Mandatory=$false)]
+        [long]
+        $WarningThresholdInBytes
+    )
+
+    $result = "Free space:`n"
+    $diskInfo = Get-WmiObject Win32_logicaldisk | Where-Object { $_.Size }
+
+    foreach ($disk in $diskInfo) {
+        $freeSpace = Convert-BytesToSize -Size ($disk.FreeSpace)
+        if ($WarningThreshold -and $disk.FreeSpace -lt $WarningThresholdInBytes) { 
+            $warn = '!!!'
+        } else {
+            $warn = ''
+        }
+        $result += ("{0}{1} {2}`n" -f $warn, $disk.DeviceID, $freeSpace)
+    }
+
+    return $result
+   
+}

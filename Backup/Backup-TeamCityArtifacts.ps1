@@ -56,66 +56,24 @@ function Backup-TeamCityArtifacts {
         $TeamcityBackupPaths
     )
 
-    Write-Log -Info "Creating Artifacts backup" -Emphasize
+    Write-Log -Info 'Creating Artifacts backup' -Emphasize
     $outputBackupDir = $TeamcityBackupPaths.ArtifactsDir
     $currentTimestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-    $buildDirs = Get-TeamCityPinnedBuildDirectories -Server $Server
-    if ($buildDirs.Count -eq 0) {
-        Write-Log -Info "Creating _NoPinnedBuilds file"
+    $buildInfos = Get-TeamCityPinnedBuildsInfo -Server $Server
+    if ($buildInfos.Count -eq 0) {
+        Write-Log -Info 'Creating _NoPinnedBuilds file'
         [void](New-Item -Path (Join-Path -Path $outputBackupDir -ChildPath "TeamCity_Artifacts_${currentTimestamp}_NoPinnedBuilds") -ItemType File -Force)
         return
     }
-    $buildDirs = $buildDirs | Foreach-Object { Join-Path -Path $TeamcityPaths.TeamCityArtifactsRelativeDir -ChildPath $_ }
+
+    $buildDirs = $buildInfos.buildRelativeDir
+    $notExistingDirs = $buildDirs | Where-Object { !(Test-Path -LiteralPath (Join-Path -Path $TeamcityPaths.TeamCityDataDir -ChildPath $_)) }
+    if ($notExistingDirs) {
+        Write-Log -Warn ('Following directories do not exist and will be ignored: {0}' -f ($notExistingDirs -join "`n"))
+        $buildDirs = $buildDirs | Where-Object { $_ -notin $notExistingDirs }
+    }
     $outputFileName = Join-Path -Path $outputBackupDir -ChildPath "TeamCity_Artifacts_${currentTimestamp}.7z"
     Write-Log -Info "Creating file $outputFileName"
     Compress-With7Zip -PathsToCompress $buildDirs -OutputFile $outputFileName -WorkingDirectory $TeamcityPaths.TeamCityDataDir
-    Write-Log -Info "TeamCity backup Pinned Builds succeeded."
-}
-
-
-function Get-TeamCityPinnedBuildDirectories() {
-    <#
-    .SYNOPSIS
-    Gets a list of all Pinned Build directories. It uses REST API to get them.
-
-    .PARAMETER Server
-    TeamCity Server name.
-
-    .EXAMPLE
-    $buildDirs = Get-TeamCityPinnedBuildDirectories -Server $Server
-    #>
-
-    [CmdletBinding()]
-    [OutputType([string[]])]
-    param(
-        [Parameter(Mandatory=$true)]
-        [string] 
-        $Server
-    )
-
-    $result = New-Object -TypeName System.Collections.ArrayList
-
-    $webSession = Get-TeamCityRestSession -Server $Server
-    Write-Log -Info "Getting pinned builds"
-    $uri = "http://$Server/app/rest/builds?locator=pinned:true"
-    $buildListResponse = Invoke-WebRequestWrapper -Uri $uri -Method GET -WebSession $webSession
-    $buildListXml = [xml]$buildListResponse.Content
-    $builds = $buildListXml.builds.build 
-
-    Write-Log -Info ("Got {0} pinned builds." -f $builds.Count)
-
-    foreach ($build in $builds) {
-        Write-Log -Info "Getting build at: $($build.href)"
-        $uri = "http://${Server}$($build.href)"
-        $buildInfoResponse = Invoke-WebRequestWrapper -Uri $uri -Method GET -WebSession $webSession -FailOnErrorResponse:$false
-        $buildInfoXml = [xml]$buildInfoResponse.Content
-        # path format: dataDir\system\artifacts\projectId\buildName\id (buildName replaced / with _)
-        $buildTypeName = $buildInfoXml.build.buildType.name -replace '/', '_'
-        $buildDir = @($buildInfoXml.build.buildType.projectId, $buildTypeName, $build.id) -join '\'
-        Write-Log -Info "Pinned build directory at: '$buildDir'"
-
-        [void]($result.Add($buildDir))
-    }
-
-    return $result.ToArray()
+    Write-Log -Info 'TeamCity backup Pinned Builds succeeded.'
 }

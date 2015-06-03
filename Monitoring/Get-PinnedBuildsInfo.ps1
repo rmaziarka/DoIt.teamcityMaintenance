@@ -22,20 +22,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 #>
 
-$curDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-Get-ChildItem -Recurse $curDir -Include *.ps1 | Where-Object { $_ -notmatch ".Tests.ps1" -and $_ -notmatch '.*\\(bat)\\.*'} | Foreach-Object {
-    . $_.FullName      
-}
+function Get-PinnedBuildsInfo {
+    <#
+    .SYNOPSIS
+    Gets information about pinned builds.
 
-Export-ModuleMember -Function `
-    Backup-TeamCityData, `
-    Get-DirectoryContentsInfo, `
-    Get-FreeSpaceInfo, `
-    Get-PinnedBuildsInfo, `
-    Get-TeamCityPaths, `
-    Get-TeamCityRestorePlan, `
-    Get-TeamCityRestSession, `
-    Get-TeamCityPinnedBuildsInfo, `
-    Initialize-TeamCityUpgrade, `
-    Install-TeamCityBackupInTaskScheduler, `
-    Restore-TeamCityData
+    .PARAMETER Server
+    Teamcity server.
+    
+    .EXAMPLE
+    Get-PinnedBuildsInfo -Server 'localhost'
+
+    #>
+
+    [CmdletBinding()]
+    [OutputType([string])]
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]
+        $Server
+    )
+
+    $pinnedInfo = Get-TeamCityPinnedBuildsInfo -Server $Server | Sort-Object -Property @{ Expression = { $_.pinner }}, @{ Expression = { $_.finishDate }}
+    $result = "Pinned builds info:"
+    
+    foreach ($pinnedBuild in $pinnedInfo) {
+        if ($pinnedBuild.artifactSize) {
+            $size = Convert-BytesToSize -Size $pinnedBuild.artifactSize
+        } else {
+            $size = '<not existing>'
+        }
+        $result += "`n{0};{1};{2};{3};{4};{5}" -f $pinnedBuild.pinner, $pinnedBuild.finishDate, $pinnedBuild.projectName, $pinnedBuild.buildName, $pinnedBuild.buildUrl, $size
+    }
+    return $result
+}

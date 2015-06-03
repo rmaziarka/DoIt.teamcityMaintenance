@@ -22,20 +22,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 #>
 
-$curDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-Get-ChildItem -Recurse $curDir -Include *.ps1 | Where-Object { $_ -notmatch ".Tests.ps1" -and $_ -notmatch '.*\\(bat)\\.*'} | Foreach-Object {
-    . $_.FullName      
-}
+function Get-DirectoryContentsInfo {
+    <#
+    .SYNOPSIS
+    Gets contents of given directory as a newline-delimited string.
 
-Export-ModuleMember -Function `
-    Backup-TeamCityData, `
-    Get-DirectoryContentsInfo, `
-    Get-FreeSpaceInfo, `
-    Get-PinnedBuildsInfo, `
-    Get-TeamCityPaths, `
-    Get-TeamCityRestorePlan, `
-    Get-TeamCityRestSession, `
-    Get-TeamCityPinnedBuildsInfo, `
-    Initialize-TeamCityUpgrade, `
-    Install-TeamCityBackupInTaskScheduler, `
-    Restore-TeamCityData
+    .PARAMETER Path
+    Path to the directory.
+
+    .PARAMETER Include
+    Include wildcards.
+    
+    .EXAMPLE
+    Get-DirectoryContentsInfo -Path $OutputBackupDir -Include '*.zip','*.7z'
+    #>
+
+    [CmdletBinding()]
+    [OutputType([string])]
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]
+        $Path,
+
+        [Parameter(Mandatory=$false)]
+        [string[]]
+        $Include
+    )
+
+    $result = "Contents of '${Path}':`n"
+    if (!(Test-Path -LiteralPath $Path)) {
+        $result = '<directory does not exist>'
+    } else { 
+        $result += (Get-ChildItem -Path "$Path\*" -Include $Include | Select-Object -ExpandProperty Name | Sort-Object) -join "`n"
+    }
+    return ($result + "`n")
+}

@@ -93,30 +93,18 @@ try {
     $backupFileName = Split-Path -Path $backupFile -Leaf
     $backupFileSize = Convert-BytesToSize -Size ((Get-Item -Path $backupFile).Length)
     $mailSubject = '[TeamCity] Backup success'
-    $mailBody = "TeamCity backup completed successfully. Created file $backupFileName ($backupFileSize)"
+    $mailBody = "TeamCity backup completed successfully. Created file $backupFileName ($backupFileSize).`n"
 } catch {
     $err = $_
     $mailSubject = '[TeamCity] Backup failure'
     $mailBody = "TeamCity backup failed: $err"
     Write-ErrorRecord -ErrorRecord $err
 } finally {
-    $mailBody += ".`n`nFree space:`n"
-    $diskInfo = Get-WmiObject Win32_logicaldisk | Where-Object { $_.Size }
-    foreach ($disk in $diskInfo) {
-        $freeSpace = Convert-BytesToSize -Size ($disk.FreeSpace)
-        if ($disk.FreeSpace -lt 10*1024*1024*1024) {
-            $warn = '!!!'
-        } else {
-            $warn = ''
-        }
-        $mailBody += ("{0}{1} {2}`n" -f $warn, $disk.DeviceID, $freeSpace)
+    $mailBody += "`n" + (Get-FreeSpaceInfo -WarningThresholdInBytes (10*1024*1024*1024))
+    $mailBody += "`n" + (Get-DirectoryContentsInfo -Path $OutputBackupDir -Include '*.zip','*.7z')
+    if ($SecondaryBackupDir) {
+        $mailBody += "`n" + (Get-DirectoryContentsInfo -Path $SecondaryBackupDir -Include '*.zip','*.7z')
     }
 
-    $mailBody += "`nContents of '${OutputBackupDir}':`n"
-    $mailBody += (Get-ChildItem -Path "$OutputBackupDir\*" -Include '*.zip','*.7z' | Select-Object -ExpandProperty Name | Sort-Object) -join "`n"
-    if ($SecondaryBackupDir) {
-        $mailBody += "`n`nContents of '${SecondaryBackupDir}':`n"
-        $mailBody += (Get-ChildItem -Path "$SecondaryBackupDir\*" -Include '*.zip','*.7z' | Select-Object -ExpandProperty Name | Sort-Object) -join "`n"
-    }
     Send-MailMessage @mailOptions -Subject $mailSubject -Body $mailBody
 }
