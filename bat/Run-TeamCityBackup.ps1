@@ -79,6 +79,9 @@ $mailOptions = @{
     To = $MailRecipients
     From = $MailFrom
     SmtpServer = $MailSmtpServer
+    Subject = ''
+    Body = ''
+    Priority = [System.Net.Mail.MailPriority]::Normal
 }
 
 if ($MailUser -and $MailPassword) { 
@@ -92,19 +95,20 @@ try {
     Write-EventLog -LogName Application -Source $PSCIGlobalConfiguration.LogEventLogSource -EntryType Info -EventID 1 -Message ("TeamCity backup completed succesfully - created file ${backupFile}.")
     $backupFileName = Split-Path -Path $backupFile -Leaf
     $backupFileSize = Convert-BytesToSize -Size ((Get-Item -Path $backupFile).Length)
-    $mailSubject = '[TeamCity] Backup success'
-    $mailBody = "TeamCity backup completed successfully. Created file $backupFileName ($backupFileSize).`n"
+    $mailOptions.Subject = '[TeamCity] Backup success'
+    $mailOptions.Body = "TeamCity backup completed successfully. Created file $backupFileName ($backupFileSize).`n"
 } catch {
     $err = $_
-    $mailSubject = '[TeamCity] Backup failure'
-    $mailBody = "TeamCity backup failed: $err"
+    $mailOptions.Subject = '[TeamCity] Backup failure'
+    $mailOptions.Body = "TeamCity backup failed: $err"
+    $mailOptions.Priority = [System.Net.Mail.MailPriority]::High
     Write-ErrorRecord -ErrorRecord $err
 } finally {
-    $mailBody += "`n" + (Get-FreeSpaceInfo -WarningThresholdInBytes (10*1024*1024*1024))
-    $mailBody += "`n" + (Get-DirectoryContentsInfo -Path $OutputBackupDir -Include '*.zip','*.7z')
+    $mailOptions.Body += "`n" + (Get-FreeSpaceInfo -WarningThresholdInBytes (10*1024*1024*1024))
+    $mailOptions.Body += "`n" + (Get-DirectoryContentsInfo -Path $OutputBackupDir -Include '*.zip','*.7z')
     if ($SecondaryBackupDir) {
-        $mailBody += "`n" + (Get-DirectoryContentsInfo -Path $SecondaryBackupDir -Include '*.zip','*.7z')
+        $mailOptions.Body += "`n" + (Get-DirectoryContentsInfo -Path $SecondaryBackupDir -Include '*.zip','*.7z')
     }
 
-    Send-MailMessage @mailOptions -Subject $mailSubject -Body $mailBody
+    Send-MailMessage @mailOptions
 }
