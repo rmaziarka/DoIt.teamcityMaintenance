@@ -86,11 +86,12 @@ function Backup-TeamCityData {
     $teamCityBackupPaths = Get-TeamCityBackupPaths -BaseBackupDir $outputBackupTempDir
 
     Backup-TeamCityBuildVersion -TeamcityPaths $teamcityPaths -TeamcityBackupPaths $teamCityBackupPaths
-    Backup-TeamCityWithRestApi -Server $server -TeamcityPaths $teamcityPaths -TeamcityBackupPaths $teamCityBackupPaths
-    Backup-TeamCityArtifacts -Server $server -TeamcityPaths $teamcityPaths -TeamcityBackupPaths $teamCityBackupPaths
+    Backup-PSCI -TeamcityBackupPaths $teamCityBackupPaths
     Backup-TeamCityAdditionalFiles -TeamcityPaths $teamcityPaths -TeamcityBackupPaths $teamCityBackupPaths
     Backup-TeamCityEnvironmentVariables -TeamcityBackupPaths $teamCityBackupPaths
     Backup-TeamCityCertificates -TeamcityPaths $teamcityPaths -TeamcityBackupPaths $teamCityBackupPaths
+    Backup-TeamCityWithRestApi -Server $server -TeamcityPaths $teamcityPaths -TeamcityBackupPaths $teamCityBackupPaths
+    Backup-TeamCityArtifacts -Server $server -TeamcityPaths $teamcityPaths -TeamcityBackupPaths $teamCityBackupPaths
 
     $outputFile = New-TeamCityFinalBackupFile -TeamcityPaths $teamcityPaths -BackupTempDir $outputBackupTempDir -OutputBackupDir $OutputBackupDir -Password $password
 

@@ -54,6 +54,11 @@ function Backup-TeamCityAdditionalFiles {
     $filesToCopy = Join-Path -Path $TeamcityPaths.TeamCityConfigDir -ChildPath "database.*properties*"
     Copy-Item -Path $filesToCopy -Destination $TeamcityBackupPaths.DatabasePropertiesDir -Force
 
+    [void](New-Item -Path $TeamcityBackupPaths.ServerConfigDir -ItemType Directory -Force)
+    Write-Log -Info "Creating backup of server.xml" -Emphasize
+    $filesToCopy = Join-Path -Path $TeamcityPaths.teamCityServerDir -ChildPath "conf\server.xml"
+    Copy-Item -Path $filesToCopy -Destination $TeamcityBackupPaths.ServerConfigDir -Force
+
     [void](New-Item -Path $TeamcityBackupPaths.PluginsDir -ItemType Directory -Force)
     $currentTimestamp = Get-Date -Format "yyyyMMdd_HHmmss"
     $outputPluginsFile = Join-Path -Path $TeamcityBackupPaths.PluginsDir -ChildPath "TeamCity_plugins_$currentTimestamp"
@@ -64,4 +69,9 @@ function Backup-TeamCityAdditionalFiles {
     $outputLibFile = Join-Path -Path $TeamcityBackupPaths.LibsDir -ChildPath "TeamCity_libs_$currentTimestamp"
     Write-Log -Info "Creating backup of TeamCity libs" -Emphasize
     Compress-With7Zip -PathsToCompress $TeamcityPaths.TeamCityLibsRelativeDir -OutputFile $outputLibFile -WorkingDirectory $TeamcityPaths.TeamCityDataDir
+
+    [void](New-Item -Path $TeamcityBackupPaths.JreDir -ItemType Directory -Force)
+    $outputJreFile = Join-Path -Path $TeamcityBackupPaths.JreDir -ChildPath "TeamCity_jre_$currentTimestamp"
+    Write-Log -Info "Creating backup of TeamCity JRE." -Emphasize
+    Compress-With7Zip -PathsToCompress $TeamcityPaths.TeamCityJreDir -OutputFile $outputJreFile -WorkingDirectory $TeamcityPaths.TeamCityServerDir
 }
