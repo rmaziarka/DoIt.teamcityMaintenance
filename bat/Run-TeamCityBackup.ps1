@@ -68,7 +68,7 @@ param(
 
 $Global:ErrorActionPreference = 'Stop'
 
-Import-Module "$PSScriptRoot\..\..\..\PSCI.psm1"
+Import-Module "$PSScriptRoot\..\..\..\PSCI.psd1"
 
 $PSCIGlobalConfiguration.LogFile = "$($OutputBackupDir)\TeamCity_backup.log"
 $PSCIGlobalConfiguration.LogEventLogSource = 'TeamCity backup job'
