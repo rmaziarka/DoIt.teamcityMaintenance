@@ -79,7 +79,7 @@ function Backup-TeamCityData {
     $password = Read-TeamCityPasswordFile -PasswordFile $PasswordFile
     
     if (!(Test-Path -LiteralPath $OutputBackupDir)) {
-        Write-Log -Critical "Backup directory '$OutputBackupDir' does not exist. Please create it and set appropriate permissions."
+        throw "Backup directory '$OutputBackupDir' does not exist. Please create it and set appropriate permissions."
     }
     
     $outputBackupTempDir = New-TempDirectory -BasePath $OutputBackupDir

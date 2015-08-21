@@ -28,7 +28,7 @@ Get-TeamCityRestorePlan
 
 $backupFile = Read-Host 'Please specify path to the backup file (e.g. D:\TeamCityBackups\TeamCity.7z):'
 if (!(Test-Path $backupFile)) {
-    Write-Log -Critical "Cannot access the backup file at '$backupFile'."
+    throw "Cannot access the backup file at '$backupFile'."
 }
 $archivePassword = Read-Host 'Please provide password to the backup file: '
 if ($archivePassword) {

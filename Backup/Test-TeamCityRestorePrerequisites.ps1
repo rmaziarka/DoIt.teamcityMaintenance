@@ -64,14 +64,14 @@ function Test-TeamCityRestorePrerequisites {
     )
  
     if (!(Test-Path -LiteralPath $BackupFile)) {
-        Write-Log -Critical "Backup file '$BackupFile' does not exist"
+        throw "Backup file '$BackupFile' does not exist"
     }
 
     if ($DatabasePropertiesFile -and (!(Test-Path -LiteralPath $DatabasePropertiesFile))) {
-        Write-Log -Critical "Cannot access database properties file at '$DatabasePropertiesFile'."
+        throw "Cannot access database properties file at '$DatabasePropertiesFile'."
     }
     if ($DatabasePropertiesFile -and $RestoreToInternalDatabase) {
-        Write-Log -Critical 'You supplied both $DatabasePropertiesFile and $RestoreToInternalDatabase. This is not allowed - see Get-TeamCityRestorePlan for details.'
+        throw 'You supplied both $DatabasePropertiesFile and $RestoreToInternalDatabase. This is not allowed - see Get-TeamCityRestorePlan for details.'
     }
 
     $teamCityPaths = Get-TeamCityPaths
@@ -81,7 +81,7 @@ function Test-TeamCityRestorePrerequisites {
             Write-Log -Warn "TeamCity data exists at '$($teamCityPaths.TeamCityDataDir)'. All existing data will be overwritten!"
             Request-UserInputToContinue
         } else {
-            Write-Log -Critical "TeamCity data exists at '$($teamCityPaths.TeamCityDataDir)'. Please ensure it can be overwritten and turn on the switch 'OverwriteExistingData'."
+            throw "TeamCity data exists at '$($teamCityPaths.TeamCityDataDir)'. Please ensure it can be overwritten and turn on the switch 'OverwriteExistingData'."
         }
     }
 

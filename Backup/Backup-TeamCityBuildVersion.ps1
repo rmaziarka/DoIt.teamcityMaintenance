@@ -53,7 +53,7 @@ function Backup-TeamCityBuildVersion {
     [void](New-Item -Path $outputDir -ItemType Directory -Force)
     $buildFile = Get-ChildItem -Path $TeamcityPaths.TeamCityServerDir -Filter "BUILD_*" | Select-Object -ExpandProperty FullName
     if (!$buildFile) {
-        Write-Log -Critical "Cannot find any BUILD* file in $($TeamcityPaths.TeamCityServerDir)."
+        throw "Cannot find any BUILD* file in $($TeamcityPaths.TeamCityServerDir)."
     }
     Write-Log -Info "Copying TeamCity build version file: '$buildFile' to '$outputDir'" -Emphasize
     [void](Copy-Item -Path $buildFile -Destination $outputDir -Force)

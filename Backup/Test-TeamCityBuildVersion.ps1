@@ -53,7 +53,7 @@ function Test-TeamCityBuildVersion {
     $backupBuildFile = Get-ChildItem -Path $backupDir -Filter "BUILD_*" | Select-Object -ExpandProperty Name
     $buildFile = Get-ChildItem -Path $TeamcityPaths.TeamCityServerDir -Filter "BUILD_*" | Select-Object -ExpandProperty Name
     if (!$buildFile) {
-        Write-Log -Critical "Cannot find any BUILD* file in $($TeamcityPaths.TeamCityServerDir)."
+        throw "Cannot find any BUILD* file in $($TeamcityPaths.TeamCityServerDir)."
     }
     if (!$backupBuildFile) {
         Write-Log -Warn "No BUILD* file in '$backupDir' directory. Cannot verify that the TeamCity has proper version ($buildFile)."

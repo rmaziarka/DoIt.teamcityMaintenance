@@ -58,7 +58,7 @@ function Get-TeamCityRestSession {
         Write-Log -Info "Accessing TeamCity NTLM login page."
         [void](Invoke-WebRequestWrapper -Uri $uri -Method GET -UseDefaultCredentials -SessionVariable webSession)
         if (!$webSession) {
-            Write-Log -Critical "Failed to create a web session."
+            throw "Failed to create a web session."
         }
         $global:TeamCityWebSession = $webSession
         return $webSession

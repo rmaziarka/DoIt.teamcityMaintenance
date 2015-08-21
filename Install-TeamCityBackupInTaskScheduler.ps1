@@ -182,7 +182,7 @@ function Install-TeamCityBackupInTaskScheduler {
     $taskDefinition =  Register-ScheduledTask -TaskName $TaskName -InputObject $task -User $Credentials.UserName -Password $Credentials.GetNetworkCredential().Password
 
     if (!$taskDefinition) {
-        Write-Log -Critical "Failed to register task."
+        throw "Failed to register task."
     }
     Write-Log -Info "Scheduled task '$TaskName' created successfully." -Emphasize
 }

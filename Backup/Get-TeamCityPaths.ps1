@@ -37,27 +37,27 @@ function Get-TeamCityPaths {
 
     $teamCityDataDir = [Environment]::GetEnvironmentVariable("TEAMCITY_DATA_PATH", "Machine")
     if (!$teamCityDataDir) {
-        Write-Log -Critical "No environment variable named TEAMCITY_DATA_PATH. Please ensure TeamCity has been installed. For restore help please run Get-TeamCityRestorePlan."
+        throw "No environment variable named TEAMCITY_DATA_PATH. Please ensure TeamCity has been installed. For restore help please run Get-TeamCityRestorePlan."
     }
     if (!(Test-Path -LiteralPath $teamCityDataDir)) {
-        Write-Log -Critical "Cannot access directory (taken from env:TEAMCITY_DATA_PATH) at: '$teamCityDataDir'"
+        throw "Cannot access directory (taken from env:TEAMCITY_DATA_PATH) at: '$teamCityDataDir'"
     }
     if ($teamCityDataDir -ieq 'C:\ProgramData\JetBrains\TeamCity') {
-        Write-Log -Critical "TeamCity data directory has been found at default location ('C:\ProgramData\JetBrains\TeamCity'). Please reinstall according to the convention (X:\TeamCity and X:\TeamCityData). For restore help please run Get-TeamCityRestorePlan."
+        throw "TeamCity data directory has been found at default location ('C:\ProgramData\JetBrains\TeamCity'). Please reinstall according to the convention (X:\TeamCity and X:\TeamCityData). For restore help please run Get-TeamCityRestorePlan."
     }
     Write-Log -Info "TeamCity data directory found at '$teamCityDataDir'"
 
     $teamCityServerDir = $teamCityDataDir -replace "data", ""
     if (!(Test-Path -LiteralPath $teamCityServerDir)) {
-        Write-Log -Critical "Cannot access TeamCity home directory derived from convention (env:TEAMCITY_DATA_PATH without 'data') at: '$teamCityServerDir'. Please reinstall according to the convention (X:\TeamCity and X:\TeamCityData). For restore help please run Get-TeamCityRestorePlan."
+        throw "Cannot access TeamCity home directory derived from convention (env:TEAMCITY_DATA_PATH without 'data') at: '$teamCityServerDir'. Please reinstall according to the convention (X:\TeamCity and X:\TeamCityData). For restore help please run Get-TeamCityRestorePlan."
     }
     $teamCityCheckFile = Join-Path -Path $teamCityServerDir -ChildPath "jre"
     if (!(Test-Path -LiteralPath $teamCityCheckFile)) {
-        Write-Log -Critical "Cannot access TeamCity jre directory at: '$teamCityCheckFile'. Please ensure TeamCity has been installed. For restore help please run Get-TeamCityRestorePlan."
+        throw "Cannot access TeamCity jre directory at: '$teamCityCheckFile'. Please ensure TeamCity has been installed. For restore help please run Get-TeamCityRestorePlan."
     }
     $teamCityCheckFile = Join-Path -Path $teamCityServerDir -ChildPath "bin\maintainDB.cmd"
     if (!(Test-Path -LiteralPath $teamCityCheckFile)) {
-        Write-Log -Critical "Cannot access TeamCity file at: '$teamCityCheckFile'. Please ensure TeamCity has been installed. For restore help please run Get-TeamCityRestorePlan."
+        throw "Cannot access TeamCity file at: '$teamCityCheckFile'. Please ensure TeamCity has been installed. For restore help please run Get-TeamCityRestorePlan."
     }
     Write-Log -Info "TeamCity home directory found at '$teamCityServerDir'"
 

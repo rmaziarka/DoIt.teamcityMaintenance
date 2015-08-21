@@ -46,12 +46,12 @@ function Read-TeamCityPasswordFile {
         return $null
     }
     if (!(Test-Path -LiteralPath $PasswordFile)) {
-        Write-Log -Critical ("Cannot access password file at '{0}'. Please ensure it exists and the current user '{1}' has appropriate permissions." -f $PasswordFile, (Get-CurrentUser))
+        throw ("Cannot access password file at '{0}'. Please ensure it exists and the current user '{1}' has appropriate permissions." -f $PasswordFile, (Get-CurrentUser))
     }
     $pass = Get-Content -Path $PasswordFile -ReadCount 1
     $match = '[\\\| "''<>&^]'
     if ($pass -match $match) {
-        Write-Log -Critical "There are some disallowed characters in password file ($PasswordFile). Invalid character regexp: $match"
+        throw "There are some disallowed characters in password file ($PasswordFile). Invalid character regexp: $match"
     }
     return (ConvertTo-PSCredential -Password $pass)
 }

@@ -44,7 +44,7 @@ function Get-LastBackupFileFromDirectory  {
 
     $file = Get-ChildItem -Path "$Dir\*" -Include '*.zip','*.7z' | Sort-Object name -Descending | Select-Object -First 1 -ExpandProperty FullName
     if (!$file) {
-        Write-Log -Critical ("Cannot find any files at {0}. Please ensure the backup file has not been corrupted." -f $Dir)
+        throw ("Cannot find any files at {0}. Please ensure the backup file has not been corrupted." -f $Dir)
     }
     return $file
 }

@@ -86,7 +86,7 @@ function Restore-TeamCityRestBackup {
     }
 
     if (!(Test-Path -LiteralPath $dbPropsFile)) {
-        Write-Log -Critical "Cannot access file '$dbPropsFile'. Please create the file manually and run restore with -DatabasePropertiesFile."
+        throw "Cannot access file '$dbPropsFile'. Please create the file manually and run restore with -DatabasePropertiesFile."
     }
 
 

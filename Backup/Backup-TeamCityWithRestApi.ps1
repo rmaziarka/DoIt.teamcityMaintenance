@@ -68,7 +68,7 @@ function Backup-TeamCityWithRestApi {
     $webSession = Get-TeamCityRestSession -Server $Server
 
     if (!$webSession) {
-         Write-Log -Critical "Failed to pass a web session from Get-TeamCityRestSession."
+         throw "Failed to pass a web session from Get-TeamCityRestSession."
     }
 
     $uri = "http://$Server/app/rest/server/backup?fileName=TeamCity_Backup&addTimestamp=true&includeConfigs=true&includeDatabase=true&includeBuildLogs=true&includePersonalChanges=true"
@@ -85,11 +85,11 @@ function Backup-TeamCityWithRestApi {
         
     } while ($backupResponse.Content -ne "idle" -and $secondsWaited/3600 -le $timeoutInHours)
     if ($backupResponse.Content -ne "idle") {
-        Write-Log -Critical "TeamCity backup failed due to timeout."
+        throw "TeamCity backup failed due to timeout."
     }
     $newTeamcityBackupFiles = Get-ChildItem -Path $TeamcityPaths.TeamCityBackupDir | Where-Object { $_.FullName -match ".zip$" } | Select-Object -ExpandProperty FullName
     if ($newTeamcityBackupFiles.Count - $currentTeamcityBackupFiles.Count -ne 1) {
-        Write-Log -Critical "Backup file has not been created at '$($TeamcityPaths.TeamCityBackupDir)' directory"
+        throw "Backup file has not been created at '$($TeamcityPaths.TeamCityBackupDir)' directory"
     }
     Write-Log -Info "Moving contents of directory '$($TeamcityPaths.TeamCityBackupDir)' to '$backupTeamcityRestBackupDir'"
     [void](New-Item -Path $backupTeamcityRestBackupDir -ItemType directory -Force)
