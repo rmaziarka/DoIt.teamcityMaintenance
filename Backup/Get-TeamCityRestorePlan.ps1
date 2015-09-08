@@ -70,7 +70,7 @@ GO
 CREATE LOGIN [TeamCity] WITH PASSWORD=N'<PASSWORD>', DEFAULT_DATABASE=[TeamCity], CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF
 GO
 USE [TeamCity]
-															
+                                                            
 GO
 CREATE USER [TeamCity] FOR LOGIN [TeamCity]
 GO
