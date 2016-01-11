@@ -68,12 +68,12 @@ param(
 
 $Global:ErrorActionPreference = 'Stop'
 
-Import-Module "$PSScriptRoot\..\..\..\PSCI.psd1"
+Import-Module "$PSScriptRoot\..\..\..\DoIt.psd1"
 
-$PSCIGlobalConfiguration.LogFile = "$($OutputBackupDir)\TeamCity_backup.log"
-$PSCIGlobalConfiguration.LogEventLogSource = 'TeamCity backup job'
-$PSCIGlobalConfiguration.LogEventLogCreateSourceIfNotExists = $true
-$PSCIGlobalConfiguration.ExitImmediatelyOnError = $false
+$DoItGlobalConfiguration.LogFile = "$($OutputBackupDir)\TeamCity_backup.log"
+$DoItGlobalConfiguration.LogEventLogSource = 'TeamCity backup job'
+$DoItGlobalConfiguration.LogEventLogCreateSourceIfNotExists = $true
+$DoItGlobalConfiguration.ExitImmediatelyOnError = $false
 
 $mailOptions = @{
     To = $MailRecipients
@@ -92,7 +92,7 @@ $mailBody = ''
 $mailSubject = ''
 try {
     $backupFile = Backup-TeamCityData -OutputBackupDir $OutputBackupDir -SecondaryBackupDir $SecondaryBackupDir -PasswordFile $PasswordFile -PrimaryRetentionInDays $PrimaryRetentionInDays -SecondaryRetentionInDays $SecondaryRetentionInDays
-    Write-EventLog -LogName Application -Source $PSCIGlobalConfiguration.LogEventLogSource -EntryType Info -EventID 1 -Message ("TeamCity backup completed succesfully - created file ${backupFile}.")
+    Write-EventLog -LogName Application -Source $DoItGlobalConfiguration.LogEventLogSource -EntryType Info -EventID 1 -Message ("TeamCity backup completed succesfully - created file ${backupFile}.")
     $backupFileName = Split-Path -Path $backupFile -Leaf
     $backupFileSize = Convert-BytesToSize -Size ((Get-Item -Path $backupFile).Length)
     $mailOptions.Subject = '[TeamCity] Backup success'

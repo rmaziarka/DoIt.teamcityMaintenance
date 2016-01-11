@@ -53,6 +53,6 @@ function Get-TeamCityBackupPaths {
         CertificatesDir = Join-Path -Path $BaseBackupDir -ChildPath "Certificates";
         JreDir = Join-Path -Path $BaseBackupDir -ChildPath "Jre";
         ServerConfigDir = Join-Path -Path $BaseBackupDir -ChildPath "ServerConfig";
-        PSCIDir = Join-Path -Path $BaseBackupDir -ChildPath "PSCI"
+        DoItDir = Join-Path -Path $BaseBackupDir -ChildPath "DoIt"
     }
 }

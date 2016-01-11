@@ -1,2 +1,2 @@
 Powershell scripts useful for TeamCity maintenance.
-Documentation is available at [PSCI wiki](https://github.com/ObjectivityBSS/PSCI/wiki/PSCI.teamcityMaintenance).
+Documentation is available at [DoIt wiki](https://github.com/ObjectivityBSS/DoIt/wiki/DoIt.teamcityMaintenance).
